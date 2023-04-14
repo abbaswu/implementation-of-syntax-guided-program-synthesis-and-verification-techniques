@@ -4,6 +4,7 @@ from sys import stderr
 from sympy import *
 
 from build_expr_from_components_in_reverse_polish_notation import build_expr_from_components_in_reverse_polish_notation
+from evaluate_candidate_program_on_input import evaluate_candidate_program_on_input
 from iterate_components_in_expr_in_reverse_polish_notation import iterate_components_in_expr_in_reverse_polish_notation
 from recursive_default_dict import RecursiveDefaultDict
 from replace_function_declaration_in_constraint_with_candidate_program import replace_function_declaration_in_constraint_with_candidate_program
@@ -34,7 +35,7 @@ def leaf_expression_size(leaf_expression, terminals):
     )
 
 
-def enumeration(
+def bottom_up_enumeration(
     non_terminals,
     terminals,
     production_rules,
@@ -63,8 +64,6 @@ def enumeration(
         
         leaf_expressions[non_terminal] = leaf_expressions_for_non_terminal
         non_leaf_production_rules[non_terminal] = non_leaf_production_rules_for_non_terminal
-       
-    yield from leaf_expressions[start_symbol]
 
     # Initialize max_expression_size
     max_expression_size = 1
@@ -78,6 +77,8 @@ def enumeration(
 
     # Initialize non_terminals_to_expressions
     non_terminals_to_expressions = leaf_expressions.copy()
+    
+    yield non_terminals_to_expression_sizes_to_expressions[start_symbol][max_expression_size], max_expression_size
     
     while True:
         # Iterate non-leaf rules of non-terminals
@@ -125,8 +126,9 @@ def enumeration(
                         if simplified_new_expression not in non_terminals_to_expressions[non_terminal]:
                             non_terminals_to_expressions[non_terminal].add(simplified_new_expression)
                             non_terminals_to_expression_sizes_to_expressions[non_terminal][max_expression_size][simplified_new_expression]
-                            if non_terminal == start_symbol:
-                                yield simplified_new_expression
+            
+            if non_terminal == start_symbol:
+                yield non_terminals_to_expression_sizes_to_expressions[non_terminal][max_expression_size], max_expression_size
         
         max_expression_size += 1
 
@@ -142,24 +144,25 @@ def bottom_up_tree_search(
     # Updated from verification oracle
     counterexample_input_set = set()
     
-    for candidate_program in enumeration(
+    for candidate_program_set, candidate_program_size in bottom_up_enumeration(
         non_terminals,
         terminals,
         production_rules,
         start_symbol
     ):
-        if all((
-            replace_function_declaration_in_constraint_with_candidate_program(
-                counterexample_input,
-                function_declaration,
-                constraint,
-                candidate_program
-            ).subs(counterexample_input)
-            for counterexample_input in counterexample_input_set
-        )):
-            counterexample_input = yield candidate_program
-            if counterexample_input is not None:
-                counterexample_input_set.add(counterexample_input)
-        else:
-            print(f'skipped {candidate_program}')
-            pass
+        for candidate_program in candidate_program_set:
+            if all((
+                evaluate_candidate_program_on_input(
+                    function_declaration,
+                    constraint,
+                    candidate_program,
+                    counterexample_input
+                )
+                for counterexample_input in counterexample_input_set
+            )):
+                counterexample_input = yield candidate_program
+                if counterexample_input is not None:
+                    counterexample_input_set.add(counterexample_input)
+            else:
+                print(f'skipped {candidate_program}')
+                pass
