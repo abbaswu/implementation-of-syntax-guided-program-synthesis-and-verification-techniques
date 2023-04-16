@@ -24,8 +24,8 @@ And(If(x >= y, x, y) >= x,
 
 from z3 import AstRef
 
-from build_expr_ref_from_components_in_reverse_polish_notation import build_expr_ref_from_components_in_reverse_polish_notation
-from iterate_components_in_expr_ref_in_reverse_polish_notation import iterate_components_in_expr_ref_in_reverse_polish_notation
+from build_z3_expr_ref_from_z3_components_in_reverse_polish_notation import build_z3_expr_ref_from_z3_components_in_reverse_polish_notation
+from iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation import iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation
 from rewrite_z3_candidate_program import rewrite_z3_candidate_program
 
 
@@ -48,7 +48,7 @@ def replace_z3_function_declaration_in_z3_constraint_with_z3_candidate_program(
         else:
             return function(*operand_deque)
     
-    return build_expr_ref_from_components_in_reverse_polish_notation(
-        iterate_components_in_expr_ref_in_reverse_polish_notation(z3_constraint),
+    return build_z3_expr_ref_from_z3_components_in_reverse_polish_notation(
+        iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation(z3_constraint),
         handle_z3_function_declaration
     )

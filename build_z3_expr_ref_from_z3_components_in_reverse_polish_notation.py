@@ -1,5 +1,5 @@
 """
-Build ExprRef from components in Reverse Polish Notation (akin to Stack Machine Bytecode).
+Build Z3 ExprRef from Z3 components in Reverse Polish Notation (akin to Stack Machine Bytecode).
 
 ```python
 In [1]: from z3 import *
@@ -12,12 +12,12 @@ In [4]: z = Int('z')
 
 In [5]: e = x + y * z
 
-In [6]: components = list(iterate_components_in_expr_ref_in_reverse_polish_notation(e))
+In [6]: components = list(iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation(e))
 
 In [7]: components
 Out[7]: [x, y, z, (*, 2), (+, 2)]
 
-In [8]: e_ = build_expr_ref_from_components_in_reverse_polish_notation(components)
+In [8]: e_ = build_z3_expr_ref_from_z3_components_in_reverse_polish_notation(components)
 
 In [9]: e_
 Out[9]: x + y*z
@@ -43,15 +43,15 @@ function_kinds_to_mismatching_arity_replacement_functions = {
 }
 
 
-def build_expr_ref_from_components_in_reverse_polish_notation(
-    components_in_reverse_polish_notation,
+def build_z3_expr_ref_from_z3_components_in_reverse_polish_notation(
+    z3_components_in_reverse_polish_notation,
     function_handler=lambda function, operand_deque: function(*operand_deque)
 ):
     stack= []
 
-    for component in components_in_reverse_polish_notation:
-        if isinstance(component, tuple) and len(component) == 2:
-            func, arity = component
+    for z3_component in z3_components_in_reverse_polish_notation:
+        if isinstance(z3_component, tuple) and len(z3_component) == 2:
+            func, arity = z3_component
 
             # Handle mismatches between func.arity() and arity
             # Replace func
@@ -69,7 +69,7 @@ def build_expr_ref_from_components_in_reverse_polish_notation(
             return_value = function_handler(func, operand_deque)
             stack.append(return_value)
         else:
-            stack.append(component)
+            stack.append(z3_component)
     
     assert len(stack) == 1
     return stack.pop()
