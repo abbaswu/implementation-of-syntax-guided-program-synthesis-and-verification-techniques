@@ -12,7 +12,7 @@ In [5]: z3_function_declaration = max2 = Function('max2', IntSort(), IntSort(), 
 
 In [6]: z3_constraint = And(max2(x, y) >= x, max2(x, y) >= y, Or(max2(y, x) == x, max2(y, x) == y))
 
-In [8]: v = z3_verification_oracle(z3_input_variable_list, z3_function_declaration, z3_constraint)
+In [8]: v = verification_oracle(z3_input_variable_list, z3_function_declaration, z3_constraint)
 
 In [9]: next(v)
 
@@ -26,15 +26,15 @@ In [12]: v.send(If(x >= y, x, y))
 ```
 """
 
-from frozendict import frozendict
 import z3
+from frozendict import frozendict
 
-from evaluate_z3_expr_ref import evaluate_z3_expr_ref
-from replace_z3_function_declaration_in_z3_constraint_with_z3_candidate_program import replace_z3_function_declaration_in_z3_constraint_with_z3_candidate_program
+from replace_z3_function_declaration_in_z3_constraint_with_z3_candidate_program import \
+    replace_z3_function_declaration_in_z3_constraint_with_z3_candidate_program
 
 
-def z3_verification_oracle(z3_input_variable_list, z3_function_declaration, z3_constraint):
-    assert len(z3_input_variable_list) == z3_function_declaration.arity()
+def verification_oracle(input_variable_list, function_declaration, constraint):
+    assert len(input_variable_list) == function_declaration.arity()
 
     # Get first candidate program
     z3_candidate_program = yield
@@ -43,9 +43,9 @@ def z3_verification_oracle(z3_input_variable_list, z3_function_declaration, z3_c
         solver.add(
             z3.Not(
                 replace_z3_function_declaration_in_z3_constraint_with_z3_candidate_program(
-                    z3_input_variable_list,
-                    z3_function_declaration,
-                    z3_constraint,
+                    input_variable_list,
+                    function_declaration,
+                    constraint,
                     z3_candidate_program
                 )
             )
@@ -56,7 +56,7 @@ def z3_verification_oracle(z3_input_variable_list, z3_function_declaration, z3_c
             # Get next candidate program and yield counterexample
             z3_input_variables_to_values = frozendict((
                 (z3_input_variable, model_ref[z3_input_variable])
-                for z3_input_variable in z3_input_variable_list
+                for z3_input_variable in input_variable_list
             ))
             z3_candidate_program = yield z3_input_variables_to_values
         elif check_sat_result == z3.unsat:

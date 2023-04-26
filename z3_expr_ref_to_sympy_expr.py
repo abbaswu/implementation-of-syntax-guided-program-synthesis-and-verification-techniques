@@ -1,6 +1,7 @@
 import sympy
 import z3
 
+
 # https://docs.sympy.org/latest/modules/core.html#module-sympy.core.numbers
 # https://docs.sympy.org/latest/modules/logic.html
 # https://z3prover.github.io/api/html/z3py_8py_source.html#l03188

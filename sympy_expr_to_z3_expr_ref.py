@@ -29,6 +29,7 @@ from functools import reduce
 import sympy
 import z3
 
+
 # https://docs.sympy.org/latest/modules/core.html#module-sympy.core.numbers
 # https://docs.sympy.org/latest/modules/logic.html
 # https://z3prover.github.io/api/html/z3py_8py_source.html#l03188
@@ -48,7 +49,9 @@ def sympy_expr_to_z3_expr_ref(sympy_symbols_to_z3_expr_ref, expr):
             assert last_z3_condition.eq(z3.BoolVal(True))
 
             return reduce(
-                lambda last_returned_expression, new_expression_condition_pair: z3.If(new_expression_condition_pair[1], new_expression_condition_pair[0], last_returned_expression),
+                lambda last_returned_expression, new_expression_condition_pair: z3.If(new_expression_condition_pair[1],
+                                                                                      new_expression_condition_pair[0],
+                                                                                      last_returned_expression),
                 zip(z3_expressions[-2::-1], z3_conditions[-2::-1]),
                 last_z3_expression
             )

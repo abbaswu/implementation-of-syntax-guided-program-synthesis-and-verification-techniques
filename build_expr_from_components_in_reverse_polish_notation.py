@@ -45,14 +45,12 @@ Out[15]: True
 
 from collections import deque
 
-import sympy
-
 
 def build_expr_from_components_in_reverse_polish_notation(
-    components_in_reverse_polish_notation,
-    function_handler=lambda function, operand_deque: function(*operand_deque)
+        components_in_reverse_polish_notation,
+        function_handler=lambda function, operand_deque: function(*operand_deque)
 ):
-    stack= []
+    stack = []
 
     for component in components_in_reverse_polish_notation:
         if isinstance(component, tuple) and len(component) == 2:
@@ -70,6 +68,6 @@ def build_expr_from_components_in_reverse_polish_notation(
             stack.append(return_value)
         else:
             stack.append(component)
-    
+
     assert len(stack) == 1
     return stack.pop()

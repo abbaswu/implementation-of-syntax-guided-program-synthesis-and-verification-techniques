@@ -34,10 +34,11 @@ In [14]: v.send(Piecewise((x, x >= y), (y, True)))
 
 import itertools
 
-from frozendict import frozendict
 import sympy
+from frozendict import frozendict
 
-from replace_function_declaration_in_constraint_with_candidate_program import replace_function_declaration_in_constraint_with_candidate_program
+from replace_function_declaration_in_constraint_with_candidate_program import \
+    replace_function_declaration_in_constraint_with_candidate_program
 
 
 def enumerative_verification_oracle(input_variables_to_value_iterables, function_declaration, constraint):
@@ -61,7 +62,8 @@ def enumerative_verification_oracle(input_variables_to_value_iterables, function
             # This is a counterexample
             if not lambdified_modified_constraint(*input_variable_value_tuple):
                 # Get next candidate program and yield counterexample
-                input_variables_to_values_frozendict = frozendict(zip(input_variables_to_value_iterables.keys(), input_variable_value_tuple))
+                input_variables_to_values_frozendict = frozendict(
+                    zip(input_variables_to_value_iterables.keys(), input_variable_value_tuple))
                 candidate_program = yield input_variables_to_values_frozendict
                 # Stop iterating over all input variable values
                 break

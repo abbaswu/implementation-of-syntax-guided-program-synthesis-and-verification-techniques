@@ -20,8 +20,10 @@ Out[8]: (x - 2*y)*If(x - 2*y < x*y, x - 2*y + 1, 2*x*y)
 ```
 """
 
-from build_z3_expr_ref_from_z3_components_in_reverse_polish_notation import build_z3_expr_ref_from_z3_components_in_reverse_polish_notation
-from iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation import iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation
+from build_z3_expr_ref_from_z3_components_in_reverse_polish_notation import \
+    build_z3_expr_ref_from_z3_components_in_reverse_polish_notation
+from iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation import \
+    iterate_z3_components_in_z3_expr_ref_in_reverse_polish_notation
 
 
 def rewrite_z3_candidate_program(z3_candidate_program, z3_input_variables_to_operands):

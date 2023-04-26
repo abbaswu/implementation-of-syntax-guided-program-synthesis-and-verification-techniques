@@ -27,10 +27,10 @@ from rewrite_candidate_program import rewrite_candidate_program
 
 
 def replace_function_declaration_in_constraint_with_candidate_program(
-    input_variable_list,
-    function_declaration,
-    constraint,
-    candidate_program
+        input_variable_list,
+        function_declaration,
+        constraint,
+        candidate_program
 ):
     def handle_function_declaration(function, operand_deque):
         nonlocal input_variable_list, function_declaration, candidate_program
@@ -44,7 +44,7 @@ def replace_function_declaration_in_constraint_with_candidate_program(
             return rewrite_candidate_program(candidate_program, input_variables_to_operands)
         else:
             return function(*operand_deque)
-    
+
     return build_expr_from_components_in_reverse_polish_notation(
         iterate_components_in_expr_in_reverse_polish_notation(constraint),
         handle_function_declaration
