@@ -1,5 +1,7 @@
 import argparse
 import logging
+import signal
+import sys
 
 from top_down_tree_search import top_down_tree_search
 from bottom_up_tree_search import bottom_up_tree_search
@@ -9,6 +11,7 @@ from eusolver import eusolver
 
 from benchmarks import max2, max3, array_search_2, array_search_3, hd_01_d5, \
     hd_03_d5, hd_07_d5, hd_09_d5, hd_10_d5, hd_13_d5, hd_18_d5, hd_19_d5, hd_20_d5
+from logging_functions import *
 
 from verification_oracle import verification_oracle
 
@@ -45,27 +48,46 @@ def parse_command_line_arguments():
     return args.algorithm, args.benchmark
 
 
-def main():
-    algorithm_name, benchmark_name = parse_command_line_arguments()
+def signal_handler(signum, frame):
+    log_timeout()
+    sys.exit(0)
 
+
+def main():
+    # set up logging
     FORMAT = '%(asctime)s %(message)s'
-    logging.basicConfig(format=FORMAT)
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
+
+    # set up signal handling
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    algorithm_name, benchmark_name = parse_command_line_arguments()
 
     # load algorithm and benchmark
     algorithm = algorithm_name_to_algorithm_dict[algorithm_name]
     benchmark = benchmark_name_to_benchmark_dict[benchmark_name]
 
     # initialize algorithm_instance
-    algorithm_instance = algorithm(
-        benchmark.non_terminals,
-        benchmark.terminals,
-        benchmark.non_terminals_to_production_rules,
-        benchmark.start_symbol,
-        # benchmark.predicate_non_terminal,
-        benchmark.function_declaration,
-        benchmark.constraint
-    )
+    if algorithm_name == 'eusolver':
+        algorithm_instance = algorithm(
+            benchmark.non_terminals,
+            benchmark.terminals,
+            benchmark.non_terminals_to_production_rules,
+            benchmark.term_non_terminal,
+            benchmark.predicate_non_terminal,
+            benchmark.function_declaration,
+            benchmark.constraint
+        )
+    else:
+        algorithm_instance = algorithm(
+            benchmark.non_terminals,
+            benchmark.terminals,
+            benchmark.non_terminals_to_production_rules,
+            benchmark.start_symbol,
+            benchmark.function_declaration,
+            benchmark.constraint
+        )
 
     # initialize verification_oracle_instance
     verification_oracle_instance = verification_oracle(benchmark.input_variable_list, benchmark.function_declaration,
@@ -78,9 +100,9 @@ def main():
         counterexample = verification_oracle_instance.send(candidate_program)
 
         if counterexample is not None:
-            # pdb.set_trace()
             candidate_program = algorithm_instance.send(counterexample)
         else:
+            log_finished()
             break
 
 

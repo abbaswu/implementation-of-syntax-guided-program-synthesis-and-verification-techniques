@@ -40,6 +40,8 @@ non_terminals_to_production_rules = {
     }
 }
 start_symbol = Start
+
+term_non_terminal = Start
 predicate_non_terminal = BoolExpr
 
 input_variable_list = [y1, y2, k1]

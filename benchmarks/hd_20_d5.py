@@ -58,8 +58,6 @@ non_terminals_to_production_rules = {
     }
 }
 start_symbol = Start
-term_non_terminal = Start
-predicate_non_terminal = Start
 
 input_variable_list = [x]
 function_declaration = f = Function('f', BitVecSort(32), BitVecSort(32))
